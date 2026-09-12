@@ -1,0 +1,37 @@
+{
+  "name": "theposy-server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "seed": "node src/seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.4.1",
+    "express-validator": "^7.2.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.3",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.16",
+    "pdfkit": "^0.15.1",
+    "socket.io": "^4.8.1",
+    "stripe": "^17.4.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.1.2",
+    "supertest": "^7.0.0"
+  }
+}

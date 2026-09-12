@@ -1,0 +1,20 @@
+import { isProduction } from "../config/env.js";
+
+export function notFound(req, res, next) {
+  res.status(404).json({ message: `Route not found: ${req.originalUrl}` });
+}
+
+// eslint-disable-next-line no-unused-vars
+export function errorHandler(err, req, res, next) {
+  const statusCode = err.statusCode || 500;
+
+  if (statusCode >= 500) {
+    console.error(err);
+  }
+
+  res.status(statusCode).json({
+    message: err.message || "Internal server error",
+    details: err.details,
+    stack: isProduction ? undefined : err.stack,
+  });
+}
