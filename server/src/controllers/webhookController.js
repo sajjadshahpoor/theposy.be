@@ -1,6 +1,8 @@
 import { stripe } from "../config/stripe.js";
 import { env } from "../config/env.js";
 import Order from "../models/Order.js";
+import { generateInvoicePdf } from "../services/pdfService.js";
+import { sendInvoiceEmail } from "../services/emailService.js";
 
 // Mounted with express.raw() ahead of the global JSON parser -- Stripe's
 // signature verification requires the untouched raw request body.
@@ -17,10 +19,21 @@ export async function stripeWebhook(req, res) {
   try {
     if (event.type === "payment_intent.succeeded") {
       const intent = event.data.object;
-      await Order.updateOne(
-        { stripePaymentIntentId: intent.id },
-        { $set: { paymentStatus: "paid" } }
-      );
+      const order = await Order.findOne({ stripePaymentIntentId: intent.id });
+
+      if (order && order.paymentStatus !== "paid") {
+        order.paymentStatus = "paid";
+        await order.save();
+
+        try {
+          const pdfBuffer = await generateInvoicePdf(order);
+          await sendInvoiceEmail(order, pdfBuffer);
+          order.invoiceGenerated = true;
+          await order.save();
+        } catch (invoiceErr) {
+          console.error(`Failed to generate/send invoice for order ${order.orderNumber}:`, invoiceErr);
+        }
+      }
     } else if (event.type === "payment_intent.payment_failed") {
       const intent = event.data.object;
       await Order.updateOne(
