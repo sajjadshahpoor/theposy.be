@@ -19,7 +19,11 @@ export function PaymentStep({ order }) {
     const { error: stripeError } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/order-confirmation/${order._id}`,
+        // Tracking page looks orders up by orderNumber+email (works for
+        // guests too, unlike the auth-protected /orders/:id route).
+        return_url: `${window.location.origin}/order-confirmation/${order._id}?orderNumber=${encodeURIComponent(
+          order.orderNumber
+        )}&email=${encodeURIComponent(order.contactEmail)}`,
       },
     });
 
