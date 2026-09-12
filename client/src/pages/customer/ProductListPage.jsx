@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { productsApi, categoriesApi } from "../../api/products.js";
 import { ProductCard } from "../../components/product/ProductCard.jsx";
 import { inputClass } from "../../components/common/FormField.jsx";
 import { Button } from "../../components/common/Button.jsx";
 
 export function ProductListPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const vendorFilter = searchParams.get("vendor");
+
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState("");
@@ -22,18 +26,31 @@ export function ProductListPage() {
     setLoading(true);
     setError("");
     productsApi
-      .list({ search: search || undefined, category: category || undefined, page })
+      .list({ search: search || undefined, category: category || undefined, vendor: vendorFilter || undefined, page })
       .then((data) => {
         setProducts(data.items);
         setPages(data.pages);
       })
       .catch(() => setError("Could not load bouquets. Please try again."))
       .finally(() => setLoading(false));
-  }, [search, category, page]);
+  }, [search, category, vendorFilter, page]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <h1 className="text-2xl font-bold text-neutral-900">Shop Bouquets</h1>
+
+      {vendorFilter && products[0]?.vendor && (
+        <p className="mt-2 text-sm text-neutral-600">
+          Showing bouquets from <span className="font-medium">{products[0].vendor.shopName}</span> ·{" "}
+          <button
+            type="button"
+            onClick={() => setSearchParams({})}
+            className="text-posy-600 hover:underline"
+          >
+            clear filter
+          </button>
+        </p>
+      )}
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <input
