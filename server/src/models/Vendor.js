@@ -34,10 +34,13 @@ const vendorSchema = new mongoose.Schema(
         },
       },
     },
+    // No admin moderation UI is in scope for this project, so vendors are
+    // auto-approved on signup; the status field still models the real-world
+    // workflow (e.g. for a future admin review step) and supports suspension.
     status: {
       type: String,
       enum: ["pending", "approved", "suspended"],
-      default: "pending",
+      default: "approved",
     },
   },
   { timestamps: true }

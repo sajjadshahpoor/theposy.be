@@ -11,6 +11,7 @@ import { notFound, errorHandler } from "./middleware/errorHandler.js";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import vendorRoutes from "./routes/vendorRoutes.js";
 
 export function createApp() {
   const app = express();
@@ -36,6 +37,7 @@ export function createApp() {
   app.use("/api/auth", authRoutes);
   app.use("/api/products", productRoutes);
   app.use("/api/categories", categoryRoutes);
+  app.use("/api/vendors", vendorRoutes);
 
   app.use(notFound);
   app.use(errorHandler);
