@@ -12,6 +12,8 @@ import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import vendorRoutes from "./routes/vendorRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import { stripeWebhook } from "./controllers/webhookController.js";
 
 export function createApp() {
   const app = express();
@@ -23,6 +25,11 @@ export function createApp() {
       credentials: true,
     })
   );
+
+  // Registered before express.json() -- Stripe needs the raw, unparsed body
+  // to verify the webhook signature.
+  app.post("/api/orders/webhook", express.raw({ type: "application/json" }), stripeWebhook);
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
@@ -38,6 +45,7 @@ export function createApp() {
   app.use("/api/products", productRoutes);
   app.use("/api/categories", categoryRoutes);
   app.use("/api/vendors", vendorRoutes);
+  app.use("/api/orders", orderRoutes);
 
   app.use(notFound);
   app.use(errorHandler);
