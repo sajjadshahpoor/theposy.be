@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { generateOrderNumber } from "../utils/orderNumber.js";
 import { stripe } from "../config/stripe.js";
+import { emitOrderUpdate } from "../config/socket.js";
 
 // Flat-rate delivery for this MVP; a future iteration could price by distance/vendor.
 const DELIVERY_FEE_CENTS = 500;
@@ -148,6 +149,8 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
   order.status = status;
   order.statusHistory.push({ status });
   await order.save();
+
+  emitOrderUpdate(order);
 
   res.json({ order });
 });
